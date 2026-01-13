@@ -232,7 +232,7 @@ export function KanbanBoard<ItemType extends object>({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex flex-row gap-6 p-6 items-start overflow-x-auto w-full h-full">
+      <div className="flex flex-row gap-6 p-6 items-start overflow-x-auto w-full h-full custom-scrollbar">
         {columns.map((column, columnIndex) => {
           const ColumnComponent = columnRender as React.ComponentType<
             Parameters<typeof columnRender>[0]

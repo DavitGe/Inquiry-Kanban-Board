@@ -111,7 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">{children}</div>
       </div>
     </div>,
     document.body

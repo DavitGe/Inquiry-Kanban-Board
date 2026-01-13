@@ -106,7 +106,7 @@ const ColumnRenderer = memo(
           <div
             ref={setNodeRef}
             className={
-              "flex flex-1 flex-col gap-2 rounded-md border border-dashed p-2 overflow-y-auto overflow-x-hidden"
+              "flex flex-1 flex-col gap-2 rounded-md border border-dashed p-2 overflow-y-auto overflow-x-hidden custom-scrollbar"
             }
           >
             {isLoading ? (

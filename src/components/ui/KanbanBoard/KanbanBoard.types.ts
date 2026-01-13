@@ -20,9 +20,7 @@ type SortableItemComponent<ItemType> = React.ComponentType<
   SortableItemProps<ItemType>
 >;
 
-export type ColumnRenderArgs<
-  ItemType extends Record<string, UniqueIdentifier>
-> = {
+export type ColumnRenderArgs<ItemType extends object> = {
   column: KanbanColumn<ItemType>;
   columnIndex: number;
   isLoading?: boolean;
@@ -39,9 +37,7 @@ export type OnItemUpdateArgs = {
   prevEl: UniqueIdentifier | null;
 };
 
-export interface KanbanBoardProps<
-  ItemType extends Record<string, UniqueIdentifier>
-> {
+export interface KanbanBoardProps<ItemType extends object> {
   columns: KanbanColumn<ItemType>[];
   setColumns: React.Dispatch<React.SetStateAction<KanbanColumn<ItemType>[]>>;
   columnRender: (args: ColumnRenderArgs<ItemType>) => React.ReactNode;

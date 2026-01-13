@@ -18,7 +18,7 @@ import { KanbanBoardProps, KanbanColumn } from "./KanbanBoard.types";
 
 const COLUMN_DROPPABLE_PREFIX = "kanban-column:";
 
-export function KanbanBoard<ItemType extends Record<string, UniqueIdentifier>>({
+export function KanbanBoard<ItemType extends object>({
   columns,
   setColumns,
   columnRender,
@@ -40,7 +40,7 @@ export function KanbanBoard<ItemType extends Record<string, UniqueIdentifier>>({
   const initialColumns = useRef<KanbanColumn<ItemType>[] | null>(null);
 
   const getItemId = useCallback(
-    (item: ItemType) => item[uniqueIdentifier],
+    (item: ItemType) => item[uniqueIdentifier] as unknown as UniqueIdentifier,
     [uniqueIdentifier]
   );
 

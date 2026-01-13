@@ -34,8 +34,8 @@ const ColumnRenderer = memo(
     return (
       <div
         key={column.key}
-        className={`flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition-all duration-200 h-full shrink-0 ${
-          isCollapsed ? "w-16" : "w-[85vw] md:w-80"
+        className={`flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition-all duration-200 h-full ${
+          isCollapsed ? "w-16 shrink-0" : "flex-1 min-w-[200px]"
         }`}
       >
         <div

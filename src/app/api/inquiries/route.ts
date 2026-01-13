@@ -10,7 +10,41 @@ export async function GET(request: Request) {
     const endDate = searchParams.get("endDate");
     const minValue = searchParams.get("minValue");
 
-    const filteredInquiries = inquiries.filter((inquiry) => {
+    // Sort inquiries based on prevEl
+    const nextMap = new Map<string | null, (typeof inquiries)[number][]>();
+    inquiries.forEach((item) => {
+      const prev = item.prevEl;
+      if (!nextMap.has(prev)) nextMap.set(prev, []);
+      nextMap.get(prev)!.push(item);
+    });
+
+    const sortedInquiries: typeof inquiries = [];
+    const visited = new Set<string>();
+
+    const traverse = (parentId: string | null) => {
+      const children = nextMap.get(parentId) || [];
+      for (const child of children) {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          sortedInquiries.push(child);
+          traverse(child.id);
+        }
+      }
+    };
+
+    traverse(null);
+
+    // Fallback for any disconnected items
+    if (sortedInquiries.length < inquiries.length) {
+      inquiries.forEach((item) => {
+        if (!visited.has(item.id)) {
+          visited.add(item.id);
+          sortedInquiries.push(item);
+        }
+      });
+    }
+
+    const filteredInquiries = sortedInquiries.filter((inquiry) => {
       //Filter by client name
       if (
         clientName &&
@@ -31,9 +65,13 @@ export async function GET(request: Request) {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    const groupedInquiries = Object.groupBy(
+      filteredInquiries,
+      (inquiry) => inquiry.phase
+    );
     return NextResponse.json({
       success: true,
-      data: filteredInquiries,
+      data: groupedInquiries,
       count: filteredInquiries.length,
     });
   } catch (error) {

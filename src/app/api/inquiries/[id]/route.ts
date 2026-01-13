@@ -4,11 +4,11 @@ import { Inquiry } from "@/interfaces/inquiry";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     const allowedFields: (keyof Inquiry)[] = [
       "clientName",
@@ -20,6 +20,7 @@ export async function PATCH(
       "phase",
       "hotels",
       "notes",
+      "prevEl",
     ];
     const updates: Partial<Inquiry> = {};
     for (const key of allowedFields) {
@@ -40,6 +41,33 @@ export async function PATCH(
     }
 
     const { createdAt: _, updatedAt: __, ...allowedUpdates } = updates;
+
+    if (
+      allowedUpdates?.prevEl &&
+      allowedUpdates.prevEl !== inquiries[inquiryIndex].prevEl
+    ) {
+      //Setting prevEl of next inquiry(one that will be from the bottom)
+      const inquiryIndexWithSamePrevEl = inquiries.findIndex(
+        (inquiry) =>
+          inquiry.prevEl === allowedUpdates.prevEl && inquiry.id != id
+      );
+      if (inquiryIndexWithSamePrevEl !== -1) {
+        inquiries[inquiryIndexWithSamePrevEl].prevEl = id;
+      }
+
+      //If status changed, set next inquiry prevEl to the previous inquiry
+      if (
+        allowedUpdates?.eventType &&
+        allowedUpdates.eventType !== inquiries[inquiryIndex].eventType
+      ) {
+        const indexOfNextInquiry = inquiries.findIndex(
+          (inquiry) => inquiry.prevEl === id
+        );
+        if (indexOfNextInquiry !== -1) {
+          inquiries[indexOfNextInquiry].prevEl = inquiries[inquiryIndex].prevEl;
+        }
+      }
+    }
 
     const updatedInquiry: Inquiry = {
       ...inquiries[inquiryIndex],

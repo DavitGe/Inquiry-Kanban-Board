@@ -41,9 +41,12 @@ export const InquiryDetailView: React.FC<InquiryDetailViewProps> = ({
 
       //show changes in board
       setInquiries((prev) => {
+        const sourcePhase = prev[inquiry.phase] || [];
+        const destPhase = prev[updatedInquiry.phase] || [];
+
         return {
           ...prev,
-          [inquiry.phase]: prev[inquiry.phase].reduce(
+          [inquiry.phase]: sourcePhase.reduce(
             (acc: Inquiry[], el: Inquiry) => {
               if (el.id === updatedInquiry.id) {
                 return acc;
@@ -63,7 +66,7 @@ export const InquiryDetailView: React.FC<InquiryDetailViewProps> = ({
           ),
           [updatedInquiry.phase]: [
             updatedInquiry,
-            ...prev[updatedInquiry.phase].map((el) => {
+            ...destPhase.map((el) => {
               if (el.prevEl === null) {
                 return {
                   ...el,

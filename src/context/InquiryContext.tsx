@@ -58,7 +58,7 @@ export function InquiryProvider({ children }: { children: ReactNode }) {
       const payload = (await response.json()) as InquiriesResponse;
       if (!payload?.success) throw new Error("Request was not successful");
 
-      setInquiries(payload.data);
+      setInquiries(payload.data || {});
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";

@@ -16,7 +16,7 @@ export const InquiryDetailView: React.FC<InquiryDetailViewProps> = ({
 }) => {
   const [selectedPhase, setSelectedPhase] = useState(inquiry.phase);
   const [isSaving, setIsSaving] = useState(false);
-  const { setInquiries } = useInquiries();
+  const { refreshInquiries } = useInquiries();
   const handleSave = async () => {
     if (selectedPhase === inquiry.phase) return;
 
@@ -34,50 +34,12 @@ export const InquiryDetailView: React.FC<InquiryDetailViewProps> = ({
       });
 
       if (!response.ok) throw new Error("Failed to update phase");
-      const { data: updatedInquiry } = await response.json();
-
+      
       message.success("Phase updated successfully");
       onClose?.();
 
-      //show changes in board
-      setInquiries((prev) => {
-        const sourcePhase = prev[inquiry.phase] || [];
-        const destPhase = prev[updatedInquiry.phase] || [];
-
-        return {
-          ...prev,
-          [inquiry.phase]: sourcePhase.reduce(
-            (acc: Inquiry[], el: Inquiry) => {
-              if (el.id === updatedInquiry.id) {
-                return acc;
-              }
-              if (el.prevEl === inquiry.id) {
-                return [
-                  ...acc,
-                  {
-                    ...el,
-                    prevEl: inquiry.prevEl,
-                  },
-                ];
-              }
-              return [...acc, el];
-            },
-            []
-          ),
-          [updatedInquiry.phase]: [
-            updatedInquiry,
-            ...destPhase.map((el) => {
-              if (el.prevEl === null) {
-                return {
-                  ...el,
-                  prevEl: updatedInquiry.id,
-                };
-              }
-              return el;
-            }),
-          ],
-        };
-      });
+      // Refresh inquiries to sync with server state (including filters)
+      await refreshInquiries();
     } catch (error) {
       console.error(error);
       message.error("Failed to update phase");
@@ -145,7 +107,7 @@ export const InquiryDetailView: React.FC<InquiryDetailViewProps> = ({
           Hotels
         </p>
         <div className="flex flex-wrap gap-2">
-          {inquiry.hotels.length > 0 ? (
+          {inquiry.hotels && inquiry.hotels.length > 0 ? (
             inquiry.hotels.map((hotel, index) => (
               <span
                 key={index}
